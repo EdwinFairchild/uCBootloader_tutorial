@@ -1,0 +1,3 @@
+bootloader.c:10:6:booloader_main	16	static
+bootloader.c:24:13:jump_to_user_app	16	static
+bootloader.c:30:13:print	272	static
