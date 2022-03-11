@@ -7,6 +7,6 @@
 #include "stdio.h"
 #include "string.h"
 
-void booloader_main(void);
+void bootloader_main(void);
 
 #endif
