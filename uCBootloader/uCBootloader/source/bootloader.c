@@ -7,38 +7,22 @@ volatile uint32_t *myHexWord = (volatile uint32_t *)SECTOR_6 ;
 //prototype
 static void print(char *msg, ...);
 static void jump_to_user_app(void);
-void simpleWrite(void);
+
 void bootloader_main(void)
 {
 	uint32_t timeNow = HAL_GetTick(); //current timestamp
-	//simpleWrite();
-	if(*myHexWord == 0xDEADBEEF)
-	{
-		print("found the beef\r\n");
 
-	}
-	else
-		print("Found no beef\r\n");
 	while(1)
 	{
 		print("tick: %d\r\n", HAL_GetTick());
-//		if((HAL_GetTick() - timeNow) >= 5000) //5s
-//		{
-//			jump_to_user_app();
-//		}
+		if((HAL_GetTick() - timeNow) >= 5000) //5s
+		{
+			jump_to_user_app();
+		}
 
 	}
 }
 
-void simpleWrite(void)
-{
-	uint32_t hexword = 0xDEADBEEF;
-	HAL_FLASH_Unlock();
-
-	HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, SECTOR_6, hexword);
-
-	HAL_FLASH_Lock();
-}
 
 static void jump_to_user_app(void)
 {
@@ -62,4 +46,20 @@ static void print(char *msg, ...)
 
 	while (!(USART2->SR & USART_SR_TC))
 		;
+}
+
+// TODO:  abstract sector erasing based user app memory location and size
+void erase_sector(void)
+{
+	FLASH_EraseInitTypeDef erase;
+	erase.TypeErase = FLASH_TYPEERASE_SECTORS;
+	erase.NbSectors = 1;
+	erase.Sector = FLASH_SECTOR_5;
+	erase.VoltageRange = FLASH_VOLTAGE_RANGE_3;
+	uint32_t err = 0;
+
+	HAL_FLASH_Unlock();
+	HAL_FLASHEx_Erase(&erase, &err);
+	HAL_FLASH_Lock();
+	// TODO: check return of FLASH ERASE and handle it.
 }
