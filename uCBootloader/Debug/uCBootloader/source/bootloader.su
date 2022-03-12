@@ -1,4 +1,8 @@
-bootloader.c:11:6:bootloader_main	16	static
-bootloader.c:33:6:simpleWrite	16	static
-bootloader.c:43:13:jump_to_user_app	16	static
-bootloader.c:49:13:print	272	static
+bootloader.c:16:6:bootloader_main	16	static
+bootloader.c:32:13:jump_to_user_app	16	static
+bootloader.c:38:13:print	272	static
+bootloader.c:57:6:erase_sector	32	static
+bootloader.c:72:13:uart_send_data	24	static
+bootloader.c:85:13:sendFrame	24	static
+bootloader.c:92:6:bootloader_USART2_callback	16	static
+bootloader.c:109:13:parse_frame	24	static

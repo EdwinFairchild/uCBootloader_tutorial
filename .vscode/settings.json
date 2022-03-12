@@ -1,6 +1,11 @@
 {
     "files.associations": {
         "bootloader.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "stdarg.h": "c",
+        "usart.h": "c",
+        "frames.h": "c",
+        "stdbool.h": "c",
+        "main.h": "c"
     }
 }
