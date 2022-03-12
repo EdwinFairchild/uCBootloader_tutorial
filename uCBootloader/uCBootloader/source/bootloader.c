@@ -4,10 +4,11 @@
 #define USER_APP_LOCATION (0x8020000 + 4)
 #define SECTOR_6 (0x08040000)
 volatile uint32_t *myHexWord = (volatile uint32_t *)SECTOR_6 ;
-//prototype
+//-----------------------| prototypes |-----------------------
 static void print(char *msg, ...);
 static void jump_to_user_app(void);
 
+//-------------------------------------------------------------------
 void bootloader_main(void)
 {
 	uint32_t timeNow = HAL_GetTick(); //current timestamp
@@ -23,13 +24,13 @@ void bootloader_main(void)
 	}
 }
 
-
+//-------------------------------------------------------------------
 static void jump_to_user_app(void)
 {
 	void (*user_app_reset_handler)(void) = (void *)(*((uint32_t *)(USER_APP_LOCATION)));
 	user_app_reset_handler();
 }
-
+//-------------------------------------------------------------------
 static void print(char *msg, ...)
 {
 	char buff[250];
@@ -47,7 +48,7 @@ static void print(char *msg, ...)
 	while (!(USART2->SR & USART_SR_TC))
 		;
 }
-
+//-------------------------------------------------------------------
 // TODO:  abstract sector erasing based user app memory location and size
 void erase_sector(void)
 {
@@ -63,3 +64,4 @@ void erase_sector(void)
 	HAL_FLASH_Lock();
 	// TODO: check return of FLASH ERASE and handle it.
 }
+//-------------------------------------------------------------------
