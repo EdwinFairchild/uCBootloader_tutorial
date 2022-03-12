@@ -12,6 +12,8 @@ volatile uint32_t *myHexWord = (volatile uint32_t *)SECTOR_6 ;
 static void print(char *msg, ...);
 static void jump_to_user_app(void);
 static void uart_send_data(uint8_t *data, uint16_t len);
+void bootloader_USART2_callback(uint8_t data);
+static bool parse_frame(void);
 //-------------------------------------------------------------------
 void bootloader_main(void)
 {
@@ -27,7 +29,6 @@ void bootloader_main(void)
 
 	}
 }
-
 //-------------------------------------------------------------------
 static void jump_to_user_app(void)
 {
@@ -103,7 +104,6 @@ void bootloader_USART2_callback(uint8_t data)
 			parse = true;
 		}
 	}
-
 }
 //-------------------------------------------------------------------
 static bool parse_frame(void)
