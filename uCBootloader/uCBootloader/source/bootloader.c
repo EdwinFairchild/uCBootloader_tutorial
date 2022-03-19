@@ -7,17 +7,29 @@
 bool parse = false;
 uint8_t bytes_buff[sizeof(frame_format_t)] = {0};
 frame_format_t receivedFrame; 
+frame_format_t ackFrame;
+frame_format_t nackFrame;
+
 volatile uint32_t *myHexWord = (volatile uint32_t *)SECTOR_6 ;
+bootloader_state bootloader_current_state = STATE_IDLE;
 //-----------------------| prototypes |-----------------------
 static void print(char *msg, ...);
 static void jump_to_user_app(void);
 static void uart_send_data(uint8_t *data, uint16_t len);
 void bootloader_USART2_callback(uint8_t data);
 static bool parse_frame(void);
+void bootloaderInit(void);
+frame_format_t idle_state_func(void);
+static void reset_recevied_frame(void);
+static void set_bl_state(bootloader_state state);
+static void sendFrame(frame_format_t *frame);
 //-------------------------------------------------------------------
 void bootloader_main(void)
 {
 	uint32_t timeNow = HAL_GetTick(); //current timestamp
+	bootloader_state_functions[STATE_IDLE] = idle_state_func;
+	//bootloader_state_functions[STATE_START_UPDATE] = start_update_state_func;
+	//bootloader_state_functions[STATE_UPDATING] = updating_state_func;
 
 	while(1)
 	{
@@ -28,6 +40,72 @@ void bootloader_main(void)
 		}
 
 	}
+}
+//-------------------------------------------------------------------
+void bootloaderInit(void)
+{
+	// create the ACK frame
+	ackFrame.start_of_frame = BL_START_OF_FRAME;
+	ackFrame.frame_id = BL_ACK_FRAME;
+	ackFrame.payload_len = (uint16_t)65535;
+	ackFrame.crc32 = 0xffffffff; // TODO:
+	ackFrame.end_of_frame = BL_END_OF_FRAME;
+	for (int i = 0; i < PAYLOAD_LEN; i++)
+	{
+		ackFrame.payload[i] = i;
+	}
+
+	// create the NACK frame
+	nackFrame.start_of_frame = BL_START_OF_FRAME;
+	nackFrame.frame_id = 0x45634AED;
+	nackFrame.payload_len = (uint16_t)65535;
+	nackFrame.crc32 = 0xffffffff; // TODO:
+	nackFrame.end_of_frame = BL_END_OF_FRAME;
+	for (int i = 0; i < PAYLOAD_LEN; i++)
+	{
+		nackFrame.payload[i] = i;
+	}
+}
+//-------------------------------------------------------------------
+frame_format_t idle_state_func(void)
+{
+	if (parse_frame())
+	{
+
+		switch (receivedFrame.frame_id)
+		{
+		case BL_START_UPDATE:
+			set_bl_state(STATE_UPDATING);
+			reset_recevied_frame();
+			sendFrame(&ackFrame);
+			break;
+
+		// only states above are valid to switch out of idle state
+		default:
+			set_bl_state(STATE_IDLE);
+			reset_recevied_frame();
+		}
+	}
+	//return (frame_format_t)0;
+	return ackFrame;
+}
+//-------------------------------------------------------------------
+static void reset_recevied_frame(void)
+{
+	receivedFrame.start_of_frame = 0;
+	receivedFrame.frame_id = 0;
+	receivedFrame.payload_len = 0;
+	receivedFrame.crc32 = 0;
+	receivedFrame.end_of_frame = 0;
+	for (int i = 0; i < 16; i++)
+	{
+		receivedFrame.payload[i] = 0;
+	}
+}
+//-------------------------------------------------------------------
+static void set_bl_state(bootloader_state state)
+{
+	bootloader_current_state = state;
 }
 //-------------------------------------------------------------------
 static void jump_to_user_app(void)

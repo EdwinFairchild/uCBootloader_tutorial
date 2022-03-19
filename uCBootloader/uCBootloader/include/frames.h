@@ -43,8 +43,17 @@ typedef struct __attribute__((packed))
 typedef enum bootloader_state
 {
     STATE_IDLE = 0,
-    STATE_START_UPDATE ,
+    STATE_START_UPDATE,
     STATE_UPDATING,
 }bootloader_state ; 
+
+typedef enum
+{
+    BL_status_ok = 0,
+    BL_status_err
+}bl_status;
+
+frame_format_t (*bootloader_state_functions[3])(void);
+
 
 #endif
