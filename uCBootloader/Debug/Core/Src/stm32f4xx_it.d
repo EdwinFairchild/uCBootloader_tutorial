@@ -25,7 +25,10 @@ Core/Src/stm32f4xx_it.o: ../Core/Src/stm32f4xx_it.c ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
- ../Core/Inc/stm32f4xx_it.h
+ ../Core/Inc/stm32f4xx_it.h \
+ F:/YouTube_Workspace/uCBootloader_Tutorial/uCBootloader/uCBootloader/include/bootloader.h \
+ ../Core/Inc/usart.h ../Core/Inc/main.h ../Core/Inc/gpio.h \
+ F:/YouTube_Workspace/uCBootloader_Tutorial/uCBootloader/uCBootloader/include/frames.h
 
 ../Core/Inc/main.h:
 
@@ -82,3 +85,13 @@ Core/Src/stm32f4xx_it.o: ../Core/Src/stm32f4xx_it.c ../Core/Inc/main.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
 
 ../Core/Inc/stm32f4xx_it.h:
+
+F:/YouTube_Workspace/uCBootloader_Tutorial/uCBootloader/uCBootloader/include/bootloader.h:
+
+../Core/Inc/usart.h:
+
+../Core/Inc/main.h:
+
+../Core/Inc/gpio.h:
+
+F:/YouTube_Workspace/uCBootloader_Tutorial/uCBootloader/uCBootloader/include/frames.h:

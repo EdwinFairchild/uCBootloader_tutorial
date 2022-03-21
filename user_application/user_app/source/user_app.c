@@ -6,8 +6,8 @@ void user_app(void)
 {
 	while(1)
 	{
-		print("user app %d\r\n", HAL_GetTick());
-		HAL_Delay(1000);
+		print("Youtube Tutorial:  %d\r\n", HAL_GetTick());
+		HAL_Delay(300);
 
 
 	}

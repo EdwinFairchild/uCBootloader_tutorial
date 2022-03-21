@@ -7,23 +7,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
   1 .text         000026f8  080201d0  080201d0  000101d0  2**4
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .rodata       0000005c  080228c8  080228c8  000128c8  2**2
+  2 .rodata       00000064  080228c8  080228c8  000128c8  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  3 .ARM.extab    00000000  08022924  08022924  00020070  2**0
+  3 .ARM.extab    00000000  0802292c  0802292c  00020070  2**0
                   CONTENTS
-  4 .ARM          00000008  08022924  08022924  00012924  2**2
+  4 .ARM          00000008  0802292c  0802292c  0001292c  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  5 .preinit_array 00000000  0802292c  0802292c  00020070  2**0
+  5 .preinit_array 00000000  08022934  08022934  00020070  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  6 .init_array   00000004  0802292c  0802292c  0001292c  2**2
+  6 .init_array   00000004  08022934  08022934  00012934  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  7 .fini_array   00000004  08022930  08022930  00012930  2**2
+  7 .fini_array   00000004  08022938  08022938  00012938  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  8 .data         00000070  20000000  08022934  00020000  2**2
+  8 .data         00000070  20000000  0802293c  00020000  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  9 .bss          00000080  20000070  080229a4  00020070  2**2
+  9 .bss          00000080  20000070  080229ac  00020070  2**2
                   ALLOC
- 10 ._user_heap_stack 00000600  200000f0  080229a4  000200f0  2**0
+ 10 ._user_heap_stack 00000600  200000f0  080229ac  000200f0  2**0
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  00020070  2**0
                   CONTENTS, READONLY
@@ -1205,7 +1205,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
  802096c:	20020000 	.word	0x20020000
  8020970:	20000000 	.word	0x20000000
  8020974:	20000070 	.word	0x20000070
- 8020978:	08022934 	.word	0x08022934
+ 8020978:	0802293c 	.word	0x0802293c
  802097c:	20000070 	.word	0x20000070
  8020980:	200000f0 	.word	0x200000f0
 
@@ -2690,7 +2690,7 @@ HAL_StatusTypeDef HAL_RCC_ClockConfig(RCC_ClkInitTypeDef  *RCC_ClkInitStruct, ui
  80211fe:	bf00      	nop
  8021200:	40023c00 	.word	0x40023c00
  8021204:	40023800 	.word	0x40023800
- 8021208:	080228d8 	.word	0x080228d8
+ 8021208:	080228e0 	.word	0x080228e0
  802120c:	20000000 	.word	0x20000000
  8021210:	20000004 	.word	0x20000004
 
@@ -2738,7 +2738,7 @@ uint32_t HAL_RCC_GetPCLK1Freq(void)
  8021248:	4618      	mov	r0, r3
  802124a:	bd80      	pop	{r7, pc}
  802124c:	40023800 	.word	0x40023800
- 8021250:	080228e8 	.word	0x080228e8
+ 8021250:	080228f0 	.word	0x080228f0
 
 08021254 <HAL_RCC_GetPCLK2Freq>:
   * @note   Each time PCLK2 changes, this function must be called to update the
@@ -2764,7 +2764,7 @@ uint32_t HAL_RCC_GetPCLK2Freq(void)
  8021270:	4618      	mov	r0, r3
  8021272:	bd80      	pop	{r7, pc}
  8021274:	40023800 	.word	0x40023800
- 8021278:	080228e8 	.word	0x080228e8
+ 8021278:	080228f0 	.word	0x080228f0
 
 0802127c <HAL_RCC_GetSysClockFreq>:
   *
@@ -4644,16 +4644,16 @@ void user_app(void)
  8021f4a:	af00      	add	r7, sp, #0
 	while(1)
 	{
-		print("user app %d\r\n", HAL_GetTick());
+		print("Youtube Tutorial:  %d\r\n", HAL_GetTick());
  8021f4c:	f7fe fd82 	bl	8020a54 <HAL_GetTick>
  8021f50:	4603      	mov	r3, r0
  8021f52:	4619      	mov	r1, r3
  8021f54:	4803      	ldr	r0, [pc, #12]	; (8021f64 <user_app+0x1c>)
  8021f56:	f000 f807 	bl	8021f68 <print>
-		HAL_Delay(1000);
- 8021f5a:	f44f 707a 	mov.w	r0, #1000	; 0x3e8
+		HAL_Delay(300);
+ 8021f5a:	f44f 7096 	mov.w	r0, #300	; 0x12c
  8021f5e:	f7fe fd85 	bl	8020a6c <HAL_Delay>
-		print("user app %d\r\n", HAL_GetTick());
+		print("Youtube Tutorial:  %d\r\n", HAL_GetTick());
  8021f62:	e7f3      	b.n	8021f4c <user_app+0x4>
  8021f64:	080228c8 	.word	0x080228c8
 
@@ -4765,10 +4765,10 @@ static void print(char *msg, ...)
  802202e:	4798      	blx	r3
  8022030:	3601      	adds	r6, #1
  8022032:	e7f2      	b.n	802201a <__libc_init_array+0x1e>
- 8022034:	0802292c 	.word	0x0802292c
- 8022038:	0802292c 	.word	0x0802292c
- 802203c:	0802292c 	.word	0x0802292c
- 8022040:	08022930 	.word	0x08022930
+ 8022034:	08022934 	.word	0x08022934
+ 8022038:	08022934 	.word	0x08022934
+ 802203c:	08022934 	.word	0x08022934
+ 8022040:	08022938 	.word	0x08022938
 
 08022044 <memset>:
  8022044:	4402      	add	r2, r0
@@ -5088,11 +5088,11 @@ static void print(char *msg, ...)
  8022330:	f000 f87a 	bl	8022428 <_printf_i>
  8022334:	e7eb      	b.n	802230e <_svfiprintf_r+0x1c2>
  8022336:	bf00      	nop
- 8022338:	080228f0 	.word	0x080228f0
- 802233c:	080228fa 	.word	0x080228fa
+ 8022338:	080228f8 	.word	0x080228f8
+ 802233c:	08022902 	.word	0x08022902
  8022340:	00000000 	.word	0x00000000
  8022344:	08022095 	.word	0x08022095
- 8022348:	080228f6 	.word	0x080228f6
+ 8022348:	080228fe 	.word	0x080228fe
 
 0802234c <_printf_common>:
  802234c:	e92d 47f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, lr}
@@ -5428,8 +5428,8 @@ static void print(char *msg, ...)
  8022664:	f104 0619 	add.w	r6, r4, #25
  8022668:	e7f5      	b.n	8022656 <_printf_i+0x22e>
  802266a:	bf00      	nop
- 802266c:	08022901 	.word	0x08022901
- 8022670:	08022912 	.word	0x08022912
+ 802266c:	08022909 	.word	0x08022909
+ 8022670:	0802291a 	.word	0x0802291a
 
 08022674 <memcpy>:
  8022674:	440a      	add	r2, r1

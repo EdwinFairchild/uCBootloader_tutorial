@@ -2,7 +2,8 @@
 #include "frames.h"
 //location of reset handler for user_app
 #define USER_APP_LOCATION (0x8020000 + 4)
-#define SECTOR_6 (0x08040000)
+uint32_t start_address = 0x8020000;
+
 
 bool parse = false;
 uint8_t bytes_buff[sizeof(frame_format_t)] = {0};
@@ -10,34 +11,38 @@ frame_format_t receivedFrame;
 frame_format_t ackFrame;
 frame_format_t nackFrame;
 
-volatile uint32_t *myHexWord = (volatile uint32_t *)SECTOR_6 ;
 bootloader_state bootloader_current_state = STATE_IDLE;
 //-----------------------| prototypes |-----------------------
 static void print(char *msg, ...);
 static void jump_to_user_app(void);
 static void uart_send_data(uint8_t *data, uint16_t len);
-void bootloader_USART2_callback(uint8_t data);
 static bool parse_frame(void);
 void bootloaderInit(void);
 frame_format_t idle_state_func(void);
+frame_format_t updating_state_func(void);
 static void reset_recevied_frame(void);
 static void set_bl_state(bootloader_state state);
 static void sendFrame(frame_format_t *frame);
+void erase_sector(void);
+static void write_payload(void);
 //-------------------------------------------------------------------
 void bootloader_main(void)
 {
+	// TODO: fix :enable RX interrupt
+	USART2->CR1 |= USART_CR1_RXNEIE;
+	bootloaderInit();
 	uint32_t timeNow = HAL_GetTick(); //current timestamp
 	bootloader_state_functions[STATE_IDLE] = idle_state_func;
 	//bootloader_state_functions[STATE_START_UPDATE] = start_update_state_func;
-	//bootloader_state_functions[STATE_UPDATING] = updating_state_func;
+	bootloader_state_functions[STATE_UPDATING] = updating_state_func;
 
 	while(1)
 	{
-		print("tick: %d\r\n", HAL_GetTick());
-		if((HAL_GetTick() - timeNow) >= 5000) //5s
-		{
-			jump_to_user_app();
-		}
+		(*bootloader_state_functions[bootloader_current_state])();
+        if(((HAL_GetTick() - timeNow) > 15000) && (bootloader_current_state == STATE_IDLE))
+        {
+        	jump_to_user_app();
+        }
 
 	}
 }
@@ -88,6 +93,55 @@ frame_format_t idle_state_func(void)
 	}
 	//return (frame_format_t)0;
 	return ackFrame;
+}
+//-------------------------------------------------------------------
+frame_format_t updating_state_func(void)
+{
+	// once we are updating for sure
+	// we can go ahead and erase the required sectors only once
+	static bool erased = false;
+	if (parse_frame())
+	{
+		if (receivedFrame.frame_id == BL_PAYLOAD)
+		{
+			if (!erased) // only do this once
+			{
+				erase_sector();
+				erased = true;
+			}
+			write_payload();
+			// reset received frame
+			//reset_recevied_frame();
+			// send ack frame
+			sendFrame(&ackFrame);
+		}
+		else if (receivedFrame.frame_id == BL_UPDATE_DONE)
+		{
+			jump_to_user_app();
+		}
+		// TODO: hanlde any unexpected frame
+		// erase sector again
+	}
+
+	//return ackFrame;
+}
+//-------------------------------------------------------------------
+static void write_payload(void)
+{
+
+	HAL_FLASH_Unlock();
+	// TODO: add this to a config.h file
+	for (int i = 0; i < 16; i += 4)
+	{
+		uint32_t *val = (uint32_t *)&receivedFrame.payload[i];
+		HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, start_address, *val);
+		start_address += 4;
+	}
+	HAL_FLASH_Lock();
+	// clear receivedFrame for next packet
+	reset_recevied_frame();
+	// TODO: read back the data and check crc
+
 }
 //-------------------------------------------------------------------
 static void reset_recevied_frame(void)
