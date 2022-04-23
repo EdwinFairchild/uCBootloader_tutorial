@@ -1,5 +1,6 @@
 #include "user_app.h"
-
+#include "main.h"
+#include "gpio.h"
 //prototype
 static void print(char *msg, ...);
 void user_app(void)
@@ -7,7 +8,8 @@ void user_app(void)
 	while(1)
 	{
 		print("Youtube Tutorial:  %d\r\n", HAL_GetTick());
-		HAL_Delay(300);
+		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+		HAL_Delay(75);
 
 
 	}
